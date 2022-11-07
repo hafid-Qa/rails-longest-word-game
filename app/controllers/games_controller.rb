@@ -6,13 +6,19 @@ require 'json'
 class GamesController < ApplicationController
   def new
     @letters = generate_grid.shuffle!
+    # @sc= session[:score]ore
   end
 
   def score
     @attempt = params[:answer].downcase
     @grid = params[:grid].downcase
     @time_taken = Time.now - params[:start_time].to_datetime
-    @final_result = run_game(@attempt, @grid)
+    @final_result = run_game
+  end
+
+  def reset
+    session[:score] = 0
+    redirect_to root_path
   end
 
   private
@@ -21,18 +27,16 @@ class GamesController < ApplicationController
     ('a'..'z').to_a.sample(9)
   end
 
-  def run_game(attempt, grid)
-    # url var not used as per rubocope spec
-    # url = "https://wagon-dictionary.herokuapp.com/#{attempt}"
-    attempt_serialized = URI.open("https://wagon-dictionary.herokuapp.com/#{attempt}")
+  def run_game
+    attempt_serialized = URI.open("https://wagon-dictionary.herokuapp.com/#{@attempt}")
     attempt_json = JSON.parse(attempt_serialized.read)['found']
     final_result = {
-      attempt:,
+      attempt: @attempt,
       time: @time_taken,
-      score: 0,
+      score: @score,
       message: "<strong>Congratulatons</strong> #{@attempt.upcase} is a valid English word!"
     }
-    display_result(final_result, attempt_json, grid, attempt)
+    display_result(final_result, attempt_json, @grid, @attempt)
   end
 
   def display_result(final_result, attempt_json, grid, attempt)
@@ -46,7 +50,7 @@ class GamesController < ApplicationController
 
   def result(final_result, attempt, grid)
     if attempt.chars.all? { |letter| grid.include?(letter) } && count_letter?(attempt, grid)
-      final_result[:score] = compute_score(attempt, final_result[:time])
+      session[:score] += compute_score(attempt, final_result[:time])
     else
       final_result[:message] =
         "Sorry but <strong>#{@attempt.upcase}</strong> cant be build out of #{@grid.upcase.gsub(' ', ', ')}"
@@ -55,9 +59,9 @@ class GamesController < ApplicationController
     final_result
   end
 
-  # def compute_score(attempt, time_after)
-  #   time_after > 60.0 ? 0 : attempt.size * (1.0 - time_after / 60.0)
-  # end
+  def compute_score(attempt, time_after)
+    time_after > 60.0 ? 0 : attempt.size * (1.0 - time_after / 60.0)
+  end
 
   def count_letter?(attempt, grid)
     attempt.chars do |letter|
@@ -67,7 +71,7 @@ class GamesController < ApplicationController
   end
 
   # def games_params
-  #   params.require(:game).permit(:answer, :grid)
+  #   params.permit(:answer, :grid, :start_time)
   # end
   # end of class
 end

@@ -1,14 +1,13 @@
 <div class="h-100 p-3 bg-light border rounded-3 my-3 shadow">
   <h1>New game</h1>
   <div class="d-flex justify-content-evenly">
-   
     <% @letters.each do |letter| %>
       <p class="btn btn-primary fs-2 letter"><%= letter.upcase %></p>
     <% end  %>
   </div>
 </div>
 <div class="h-100 p-3 bg-light border rounded-3 my-3 shadow">
-  <form action="/score"  method="get"  data-turbo="false" class="m-3 p-2 d-flex justify-content-between align-items-center">
+  <form action="/score"  method="post"  data-turbo="false" class="m-3 p-2 d-flex justify-content-between align-items-center">
     <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
     <div class="mb-3 flex-grow-1">
       <label for="answer" class="form-label">What is the longest word you can find?</label>
@@ -21,3 +20,8 @@
     <%= hidden_field_tag 'start_time', Time.now %>
   </form>
 </div>
+
+  <form action="session"  method="get"  data-turbo="false" class="m-3 p-2 d-flex" >
+    <button type="submit" class="btn btn-primary mt-3 play">New player </button>
+  </form>
+
