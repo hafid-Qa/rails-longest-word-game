@@ -23,4 +23,12 @@ class GamesController < ApplicationController
     }
     display_result(final_result, attempt_json, grid, attempt)
   end
+
+  def display_result(final_result, attempt_json, grid, attempt)
+    if attempt_json then final_result = result(final_result, attempt, grid)
+    else
+      final_result[:message] = "<strong>#{attempt.upcase}</strong> not an english word"
+    end
+    final_result
+  end
 end
