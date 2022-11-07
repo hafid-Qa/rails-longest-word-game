@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'open-uri'
+require 'json'
 # define game logic
 class GamesController < ApplicationController
   def new
@@ -11,7 +13,6 @@ class GamesController < ApplicationController
     @grid = params[:grid].downcase
     @time_taken = Time.now - params[:start_time].to_datetime
     @final_result = run_game(@attempt, @grid)
-    puts @time_taken
   end
 
   private
@@ -35,7 +36,8 @@ class GamesController < ApplicationController
   end
 
   def display_result(final_result, attempt_json, grid, attempt)
-    if attempt_json then final_result = result(final_result, attempt, grid)
+    if attempt_json
+      final_result = result(final_result, attempt, grid)
     else
       final_result[:message] = "<strong>#{attempt.upcase}</strong> not an english word"
     end
@@ -44,15 +46,18 @@ class GamesController < ApplicationController
 
   def result(final_result, attempt, grid)
     if attempt.chars.all? { |letter| grid.include?(letter) } && count_letter?(attempt, grid)
-      # final_result[:score] = attempt.size.to_f / final_result[:time]
-
-      final_result
+      final_result[:score] = compute_score(attempt, final_result[:time])
     else
       final_result[:message] =
         "Sorry but <strong>#{@attempt.upcase}</strong> cant be build out of #{@grid.upcase.gsub(' ', ', ')}"
+      # final_result[:score] = 0
     end
     final_result
   end
+
+  # def compute_score(attempt, time_after)
+  #   time_after > 60.0 ? 0 : attempt.size * (1.0 - time_after / 60.0)
+  # end
 
   def count_letter?(attempt, grid)
     attempt.chars do |letter|
