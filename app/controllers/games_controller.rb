@@ -6,7 +6,6 @@ require 'json'
 class GamesController < ApplicationController
   def new
     @letters = generate_grid.shuffle!
-    # @sc= session[:score]ore
   end
 
   def score
