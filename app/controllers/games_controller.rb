@@ -3,6 +3,8 @@ class GamesController < ApplicationController
     @letters = generate_grid.shuffle!
   end
 
+  def score; end
+
   private
 
   def generate_grid
