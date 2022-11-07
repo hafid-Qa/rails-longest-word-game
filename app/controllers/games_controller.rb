@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# define game logic
 class GamesController < ApplicationController
   def new
     @letters = generate_grid.shuffle!
@@ -16,9 +19,10 @@ class GamesController < ApplicationController
   end
 
   def run_game(attempt, grid)
-    url = "https://wagon-dictionary.herokuapp.com/#{attempt}"
-    attempt_serialized = URI.open(url).read
-    attempt_json = JSON.parse(attempt_serialized)['found']
+    # url var not used as per rubocope spec
+    # url = "https://wagon-dictionary.herokuapp.com/#{attempt}"
+    attempt_serialized = URI.open("https://wagon-dictionary.herokuapp.com/#{attempt}")
+    attempt_json = JSON.parse(attempt_serialized.read)['found']
     final_result = {
       attempt:,
       # time: end_time - start_time,
