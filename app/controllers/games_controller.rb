@@ -3,7 +3,11 @@ class GamesController < ApplicationController
     @letters = generate_grid.shuffle!
   end
 
-  def score; end
+  def score
+    @attempt = params[:answer].downcase
+    @grid = params[:grid].downcase
+    @final_result = run_game(@attempt, @grid)
+  end
 
   private
 
