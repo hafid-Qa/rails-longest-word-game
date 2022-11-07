@@ -31,4 +31,24 @@ class GamesController < ApplicationController
     end
     final_result
   end
+
+  def result(final_result, attempt, grid)
+    if attempt.chars.all? { |letter| grid.include?(letter) } && count_letter?(attempt, grid)
+      # final_result[:score] = attempt.size.to_f / final_result[:time]
+
+      final_result
+    else
+      final_result[:message] =
+        "Sorry but <strong>#{@attempt.upcase}</strong> cant be build out of #{@grid.upcase.gsub(' ', ', ')}"
+    end
+    final_result
+  end
+
+  def count_letter?(attempt, grid)
+    attempt.chars do |letter|
+      return false unless attempt.count(letter) <= grid.split.count(letter)
+    end
+    true
+  end
+  # end of class
 end
