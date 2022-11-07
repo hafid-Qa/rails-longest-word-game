@@ -9,7 +9,9 @@ class GamesController < ApplicationController
   def score
     @attempt = params[:answer].downcase
     @grid = params[:grid].downcase
+    @time_taken = Time.now - params[:start_time].to_datetime
     @final_result = run_game(@attempt, @grid)
+    puts @time_taken
   end
 
   private
@@ -25,7 +27,7 @@ class GamesController < ApplicationController
     attempt_json = JSON.parse(attempt_serialized.read)['found']
     final_result = {
       attempt:,
-      # time: end_time - start_time,
+      time: @time_taken,
       score: 0,
       message: "<strong>Congratulatons</strong> #{@attempt.upcase} is a valid English word!"
     }
@@ -58,5 +60,9 @@ class GamesController < ApplicationController
     end
     true
   end
+
+  # def games_params
+  #   params.require(:game).permit(:answer, :grid)
+  # end
   # end of class
 end
