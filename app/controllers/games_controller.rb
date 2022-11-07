@@ -27,8 +27,8 @@ class GamesController < ApplicationController
   end
 
   def run_game
-    attempt_serialized = URI.open("https://wagon-dictionary.herokuapp.com/#{@attempt}")
-    attempt_json = JSON.parse(attempt_serialized.read)['found']
+    # attempt_serialized = URI.open("https://wagon-dictionary.herokuapp.com/#{@attempt}")
+    attempt_json = english_word?
     final_result = {
       attempt: @attempt,
       time: @time_taken,
@@ -36,6 +36,11 @@ class GamesController < ApplicationController
       message: "<strong>Congratulatons</strong> #{@attempt.upcase} is a valid English word!"
     }
     display_result(final_result, attempt_json, @grid, @attempt)
+  end
+
+  def english_word?
+    attempt_serialized = URI.open("https://wagon-dictionary.herokuapp.com/#{@attempt}")
+    JSON.parse(attempt_serialized.read)['found']
   end
 
   def display_result(final_result, attempt_json, grid, attempt)
@@ -58,8 +63,8 @@ class GamesController < ApplicationController
     final_result
   end
 
-  def compute_score(attempt, time_after)
-    time_after > 60.0 ? 0 : attempt.size * (1.0 - time_after / 60.0)
+  def compute_score(attempt, time_taken)
+    time_taken > 60.0 ? 0 : attempt.size * (1.0 - time_taken / 60.0)
   end
 
   def count_letter?(attempt, grid)
@@ -69,8 +74,5 @@ class GamesController < ApplicationController
     true
   end
 
-  # def games_params
-  #   params.permit(:answer, :grid, :start_time)
-  # end
   # end of class
 end
